@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SiteScope — Free Website Audit</title>
+<meta name="description" content="Instant SEO, design, and conversion audit for any website. Enter your URL and get actionable insights in seconds.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#09090b;--s1:#131316;--s2:#1c1c21;--s3:#25252b;
+  --bd:#27272a;--fg:#fafafa;--fg2:#a1a1aa;--mt:#71717a;--mt2:#52525b;
+  --ac:#818cf8;--ac2:#6366f1;--acs:rgba(129,140,248,.12);
+  --gn:#4ade80;--gns:rgba(74,222,128,.12);
+  --yl:#fbbf24;--yls:rgba(251,191,36,.12);
+  --rd:#f87171;--rds:rgba(248,113,113,.12);
+  --or:#fb923c;
+  color-scheme:dark
+}
+@media(prefers-color-scheme:light){
+  :root:not([data-theme="dark"]){
+    --bg:#fafafa;--s1:#fff;--s2:#f4f4f5;--s3:#e4e4e7;
+    --bd:#e4e4e7;--fg:#09090b;--fg2:#52525b;--mt:#71717a;--mt2:#a1a1aa;
+    --ac:#6366f1;--ac2:#4f46e5;--acs:rgba(99,102,241,.08);
+    --gn:#16a34a;--gns:rgba(22,163,74,.08);
+    --yl:#ca8a04;--yls:rgba(202,138,4,.08);
+    --rd:#dc2626;--rds:rgba(220,38,38,.08);
+    --or:#ea580c;
+    color-scheme:light
+  }
+}
+:root[data-theme="light"]{
+  --bg:#fafafa;--s1:#fff;--s2:#f4f4f5;--s3:#e4e4e7;
+  --bd:#e4e4e7;--fg:#09090b;--fg2:#52525b;--mt:#71717a;--mt2:#a1a1aa;
+  --ac:#6366f1;--ac2:#4f46e5;--acs:rgba(99,102,241,.08);
+  --gn:#16a34a;--gns:rgba(22,163,74,.08);
+  --yl:#ca8a04;--yls:rgba(202,138,4,.08);
+  --rd:#dc2626;--rds:rgba(220,38,38,.08);
+  --or:#ea580c;
+  color-scheme:light
+}
+body{background:var(--bg);color:var(--fg);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+.w{max-width:960px;margin:0 auto;padding:0 16px}
+
+/* Landing */
+#landing{min-height:90vh;min-height:90dvh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:40px 0}
+.logo{font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--ac);margin-bottom:28px;display:flex;align-items:center;gap:8px}
+.logo svg{width:20px;height:20px}
+#landing h1{font-size:clamp(28px,6vw,52px);font-weight:900;letter-spacing:-.04em;line-height:1.08;margin-bottom:16px;text-wrap:balance}
+#landing h1 em{font-style:normal;background:linear-gradient(135deg,var(--ac),#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{font-size:16px;color:var(--mt);max-width:480px;margin-bottom:36px;line-height:1.6}
+.input-box{width:100%;max-width:520px}
+.url-row{display:flex;gap:8px}
+.url-row input{flex:1;min-width:0;background:var(--s1);border:2px solid var(--bd);border-radius:12px;padding:16px 18px;font:inherit;font-size:16px;color:var(--fg);outline:none;transition:border-color .2s}
+.url-row input:focus{border-color:var(--ac)}
+.url-row input::placeholder{color:var(--mt2)}
+.btn{background:var(--ac);color:#fff;border:none;border-radius:12px;padding:16px 28px;font:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;flex-shrink:0}
+.btn:hover{background:var(--ac2);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.note{font-size:12px;color:var(--mt2);margin-top:12px}
+.features{display:flex;gap:20px;margin-top:40px;flex-wrap:wrap;justify-content:center}
+.feat{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--fg2)}
+.feat-dot{width:6px;height:6px;border-radius:50%;background:var(--ac);flex-shrink:0}
+
+/* Loading */
+#loading{display:none;min-height:70vh;min-height:70dvh;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:40px 16px}
+.spin{width:44px;height:44px;border:3px solid var(--bd);border-top-color:var(--ac);border-radius:50%;animation:sp .7s linear infinite;margin-bottom:20px}
+@keyframes sp{to{transform:rotate(360deg)}}
+#loading h2{font-size:20px;font-weight:700;margin-bottom:6px}
+#lst{font-size:13px;color:var(--mt)}
+.pbar{width:260px;height:5px;background:var(--s2);border-radius:3px;overflow:hidden;margin-top:14px}
+.pfill{height:100%;background:linear-gradient(90deg,var(--ac),#c084fc);border-radius:3px;transition:width .3s;width:0}
+
+/* Error */
+#error{display:none;min-height:40vh;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:40px 16px}
+#error h2{font-size:20px;font-weight:700;color:var(--rd);margin-bottom:8px}
+#errmsg{font-size:14px;color:var(--mt);margin-bottom:20px;max-width:400px}
+
+/* Results */
+#results{display:none;padding:28px 0 60px}
+.rhdr{margin-bottom:24px}
+.rhdr h1{font-size:clamp(20px,4vw,28px);font-weight:800;letter-spacing:-.03em;margin-bottom:4px}
+.rurl{font-size:13px;color:var(--ac);word-break:break-all}
+.rts{font-size:11px;color:var(--mt);margin-top:3px}
+.rbk{background:none;border:1px solid var(--bd);border-radius:8px;padding:7px 14px;font:inherit;font-size:12px;font-weight:600;color:var(--mt);cursor:pointer;margin-top:10px;transition:all .15s}
+.rbk:hover{border-color:var(--ac);color:var(--ac)}
+
+/* Scores */
+.srow{display:flex;align-items:center;gap:24px;padding:24px;background:var(--s1);border:1px solid var(--bd);border-radius:16px;margin-bottom:16px;flex-wrap:wrap}
+.srow svg text{font-family:'Inter',system-ui,sans-serif}
+.ssub{display:flex;gap:14px;flex-wrap:wrap;flex:1;justify-content:center}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;margin-bottom:16px}
+.st{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:12px 8px;text-align:center}
+.stv{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ac)}
+.stl{font-size:9px;color:var(--mt);margin-top:1px;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+
+/* Tabs */
+.tabs{display:flex;gap:1px;border-bottom:2px solid var(--bd);margin-bottom:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{padding:9px 12px;font:inherit;font-size:12px;font-weight:600;color:var(--mt);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .15s}
+.tabs button.on{color:var(--ac);border-bottom-color:var(--ac)}
+.pn{display:none}.pn.on{display:block}
+
+/* Cards */
+.cd{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:12px}
+.cd h3{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--mt);margin:16px 0 8px}
+.cd h3:first-child{margin-top:0}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.dr{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--bd);font-size:12px;gap:8px}
+.dr:last-child{border-bottom:none}
+.dr .k{color:var(--mt);flex-shrink:0}
+.dr .v{font-weight:600;text-align:right;word-break:break-word;min-width:0}
+.tg{display:inline-block;padding:2px 9px;border-radius:99px;font-size:10px;font-weight:600;background:var(--acs);color:var(--ac);margin:1px 2px}
+.tgd{background:var(--s2);color:var(--mt)}
+.sv{display:inline-block;padding:2px 8px;border-radius:99px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.svc{background:var(--rds);color:var(--rd)}.svw{background:var(--yls);color:var(--yl)}.svi{background:var(--s2);color:var(--mt)}
+.br{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.bl{font-size:11px;color:var(--mt);width:110px;flex-shrink:0;text-transform:capitalize}
+.bt{flex:1;height:5px;background:var(--s2);border-radius:3px;overflow:hidden;min-width:0}
+.bf{height:100%;border-radius:3px;background:var(--ac)}
+.is{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--bd);font-size:12px}
+.is:last-child{border-bottom:none}
+.rc{padding:12px;background:var(--s2);border-radius:10px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
+.rn{width:24px;height:24px;border-radius:50%;background:var(--ac);color:#fff;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rcc{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--ac);margin-bottom:1px}
+.rca{font-size:12px;font-weight:500}
+.wk{padding:12px 14px;border-left:3px solid var(--rd);background:var(--rds);border-radius:0 10px 10px 0;margin-bottom:8px}
+.wk.ww{border-left-color:var(--yl);background:var(--yls)}
+.wka{font-weight:700;font-size:13px;margin-bottom:1px}
+.wkd{font-size:11px;color:var(--mt)}
+.src{font-size:9px;color:var(--mt2);margin-top:3px;font-style:italic;line-height:1.4;padding-left:1px}
+.icpb{background:var(--acs);border:1px solid color-mix(in srgb,var(--ac) 25%,transparent);border-radius:14px;padding:18px;margin-bottom:12px}
+.ck{color:var(--gn);font-weight:700}.cx{color:var(--rd);font-weight:700}
+.ftr{text-align:center;padding:28px 0;font-size:11px;color:var(--mt2)}
+@media(max-width:600px){
+  .srow{padding:18px;gap:14px;flex-direction:column;align-items:center}
+  .g2{grid-template-columns:1fr}
+  .url-row{flex-direction:column}
+  .btn{width:100%}
+  .features{flex-direction:column;align-items:center}
+}
+</style>
+</head>
+<body>
+<div class="w">
+
+<!-- Landing -->
+<div id="landing">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    SiteScope
+  </div>
+  <h1>Instant website audit.<br><em>Zero guesswork.</em></h1>
+  <p class="sub">Enter any URL. Get a full SEO, design, conversion, and ideal customer analysis in seconds — with prioritized fixes.</p>
+  <div class="input-box">
+    <form class="url-row" onsubmit="go(event)">
+      <input type="url" id="urlin" placeholder="https://yourwebsite.com" autocomplete="url" required>
+      <button class="btn" type="submit" id="gobtn">Audit</button>
+    </form>
+    <div class="note">Free. No signup. Works on any website.</div>
+  </div>
+  <div class="features">
+    <div class="feat"><span class="feat-dot"></span>SEO Audit</div>
+    <div class="feat"><span class="feat-dot"></span>Design Analysis</div>
+    <div class="feat"><span class="feat-dot"></span>Customer Profiling</div>
+    <div class="feat"><span class="feat-dot"></span>Prioritized Fixes</div>
+  </div>
+</div>
+
+<!-- Loading -->
+<div id="loading">
+  <div class="spin"></div>
+  <h2>Analyzing your website</h2>
+  <div id="lst">Fetching page...</div>
+  <div class="pbar"><div class="pfill" id="pf"></div></div>
+</div>
+
+<!-- Error -->
+<div id="error">
+  <h2>Couldn't reach that site</h2>
+  <div id="errmsg"></div>
+  <button class="btn" onclick="reset()">Try again</button>
+</div>
+
+<!-- Results -->
+<div id="results">
+  <div class="rhdr">
+    <h1>Audit Report</h1>
+    <div class="rurl" id="rurl"></div>
+    <div class="rts" id="rts"></div>
+    <button class="rbk" onclick="reset()">Audit another site</button>
+  </div>
+  <div class="srow"><div id="mr"></div><div class="ssub" id="sr"></div></div>
+  <div class="stats" id="rstats"></div>
+  <div class="tabs" id="rtabs"></div>
+  <div id="rpanes"></div>
+  <div class="ftr">Powered by SiteScope &middot; Built by Om Rane</div>
+</div>
+
+</div>
+<script>
+const API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? '' : '';
+
+function sC(s){return s>=90?'var(--gn)':s>=70?'var(--yl)':s>=50?'var(--or)':'var(--rd)'}
+function rng(sc,sz,lb){
+  const c=2*Math.PI*42,o=c-(sc/100)*c,cl=sC(sc);
+  return '<div style="text-align:center"><svg width="'+sz+'" height="'+sz+'" viewBox="0 0 96 96">'
+  +'<circle cx="48" cy="48" r="42" fill="none" stroke="var(--bd)" stroke-width="6" opacity=".4"/>'
+  +'<circle cx="48" cy="48" r="42" fill="none" stroke="'+cl+'" stroke-width="6" stroke-dasharray="'+c+'" stroke-dashoffset="'+o+'" stroke-linecap="round" transform="rotate(-90 48 48)" style="transition:stroke-dashoffset 1s ease"/>'
+  +'<text x="48" y="48" text-anchor="middle" dy=".35em" fill="'+cl+'" style="font-size:'+(sz>110?24:17)+'px;font-weight:800">'+sc+'</text></svg>'
+  +(lb?'<div style="font-size:10px;color:var(--mt);font-weight:600;margin-top:2px">'+lb+'</div>':'')+'</div>'
+}
+function ck(v){return v?'<span class="ck">Yes</span>':'<span class="cx">No</span>'}
+function sv(s){return '<span class="sv '+(s==='critical'?'svc':s==='warning'?'svw':'svi')+'">'+s+'</span>'}
+function brs(e,c){if(!e.length)return '<p style="font-size:11px;color:var(--mt)">No signals</p>';const m=e[0][1];return e.map(([n,s])=>'<div class="br"><span class="bl">'+n+'</span><div class="bt"><div class="bf" style="width:'+(s/m*100)+'%;background:'+c+'"></div></div></div>').join('')}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+
+// ─── Analyzer ───
+function analyze(url, html, extra) {
+  const p = new DOMParser(), doc = p.parseFromString(html, 'text/html');
+  const $ = s => doc.querySelectorAll(s), $1 = s => doc.querySelector(s);
+  const at = (s, a) => { const e = $1(s); return e ? e.getAttribute(a) || '' : '' };
+  const bt = (doc.body?.textContent || '').replace(/\s+/g,' ').trim().toLowerCase();
+  const iss = [];
+  let pu; try { pu = new URL(url.startsWith('http') ? url : 'https://'+url) } catch { pu = { hostname:'', protocol:'https:' } }
+
+  // SEO
+  const seo = {};
+  seo.title = ($1('title')?.textContent||'').trim();
+  seo.tl = seo.title.length;
+  seo.desc = at('meta[name="description"]','content');
+  seo.dl = seo.desc.length;
+  seo.canonical = at('link[rel="canonical"]','href');
+  seo.viewport = at('meta[name="viewport"]','content');
+  seo.lang = doc.documentElement?.getAttribute('lang')||'';
+  seo.og = {}; $('meta[property^="og:"]').forEach(e=>{seo.og[e.getAttribute('property')]=e.getAttribute('content')||''});
+  seo.tw = {}; $('meta[name^="twitter:"]').forEach(e=>{seo.tw[e.getAttribute('name')]=e.getAttribute('content')||''});
+  seo.h = {}; for(let i=1;i<=6;i++){seo.h['h'+i]=[];$('h'+i).forEach(e=>seo.h['h'+i].push(e.textContent.trim().substring(0,90)))}
+  const imgs=$('img'); seo.ti=imgs.length; seo.ia=0; seo.im=0; seo.il=0;
+  imgs.forEach(e=>{const a=e.getAttribute('alt');if(a&&a.trim())seo.ia++;else seo.im++;if(e.getAttribute('loading')==='lazy'||e.getAttribute('data-src'))seo.il++});
+  const lnks=$('a[href]'); seo.tl2=lnks.length; seo.il2=0; seo.el=0; seo.dl2=0;
+  lnks.forEach(e=>{const h=e.getAttribute('href')||'';if(!h||h==='#'||h.startsWith('javascript:'))seo.dl2++;else if(h.startsWith('http')&&!h.includes(pu.hostname))seo.el++;else seo.il2++});
+  seo.schema=[]; $('script[type="application/ld+json"]').forEach(e=>{try{const j=JSON.parse(e.textContent);(Array.isArray(j)?j:[j]).forEach(x=>{if(x['@type'])seo.schema.push(x['@type'])})}catch{}});
+  seo.wc=bt.split(/\s+/).filter(Boolean).length;
+  seo.pp=$('p').length;
+  seo.fav=$('link[rel*="icon"]').length>0;
+  seo.sc=$('script').length;
+  seo.ss=$('link[rel="stylesheet"]').length;
+  seo.fm=$('form').length;
+  seo.sl=[];const sdoms=['facebook.com','twitter.com','x.com','instagram.com','linkedin.com','youtube.com','tiktok.com','pinterest.com'];
+  lnks.forEach(e=>{const h=e.getAttribute('href')||'';sdoms.forEach(d=>{if(h.includes(d))seo.sl.push({p:d.replace('.com',''),u:h})})});
+  seo.sl=[...new Map(seo.sl.map(s=>[s.p,s])).values()];
+
+  // Robots/Sitemap from server
+  seo.hasRobots = !!extra.robotsTxt;
+  seo.hasSitemap = !!extra.sitemapFound;
+
+  // Issues
+  if(!seo.title)iss.push({s:'critical',c:'seo',m:'Missing page title — search engines need this',src:'Checked: <title> tag in HTML <head> · Google Search Central'});
+  else if(seo.tl<30)iss.push({s:'warning',c:'seo',m:'Title too short ('+seo.tl+' chars). Aim for 50–60.',src:'Source: <title> tag is '+seo.tl+' chars — Google displays 50–60 · Moz Title Tag Guide'});
+  else if(seo.tl>60)iss.push({s:'warning',c:'seo',m:'Title too long ('+seo.tl+' chars). Keep under 60.',src:'Source: <title> tag is '+seo.tl+' chars — Google truncates after ~60 · Moz Title Tag Guide'});
+  if(!seo.desc)iss.push({s:'critical',c:'seo',m:'Missing meta description — this shows in Google results',src:'Checked: <meta name="description"> in <head> · Google Search Central'});
+  else if(seo.dl<120)iss.push({s:'warning',c:'seo',m:'Meta description too short ('+seo.dl+' chars). Aim for 150–160.',src:'Source: <meta name="description"> is '+seo.dl+' chars — optimal 150–160 · Moz Meta Description Guide'});
+  else if(seo.dl>160)iss.push({s:'warning',c:'seo',m:'Meta description too long ('+seo.dl+' chars).',src:'Source: <meta name="description"> is '+seo.dl+' chars — Google truncates after ~160 · Moz'});
+  if(seo.h.h1.length===0)iss.push({s:'critical',c:'seo',m:'No H1 tag — every page needs exactly one',src:'Checked: <h1> elements in page DOM · W3C Heading Hierarchy · Google SEO Starter Guide'});
+  else if(seo.h.h1.length>1)iss.push({s:'warning',c:'seo',m:'Multiple H1 tags ('+seo.h.h1.length+'). Use one.',src:'Source: Found '+seo.h.h1.length+' <h1> tags — best practice is exactly 1 · W3C HTML spec'});
+  if(seo.im>0)iss.push({s:'warning',c:'seo',m:seo.im+' images missing alt text',src:'Source: '+seo.im+' of '+seo.ti+' <img> tags have empty/missing alt attribute · WCAG 2.1 §1.1.1 · Google Image SEO'});
+  if(!seo.canonical)iss.push({s:'warning',c:'seo',m:'No canonical URL — duplicate content risk',src:'Checked: <link rel="canonical"> in <head> · Google Canonical URL Guidelines'});
+  if(!seo.lang)iss.push({s:'warning',c:'seo',m:'No lang attribute on HTML',src:'Checked: lang attribute on <html> element · WCAG 2.1 §3.1.1 · Helps search engines detect language'});
+  if(!seo.viewport)iss.push({s:'critical',c:'seo',m:'No viewport meta — not mobile-friendly',src:'Checked: <meta name="viewport"> in <head> · Google Mobile-First Indexing (required since 2019)'});
+  if(seo.schema.length===0)iss.push({s:'warning',c:'seo',m:'No structured data for rich results',src:'Checked: <script type="application/ld+json"> blocks · Google Rich Results · schema.org'});
+  if(!seo.fav)iss.push({s:'info',c:'seo',m:'No favicon',src:'Checked: <link rel="icon"> in <head> · Google shows favicons in search results'});
+  if(Object.keys(seo.og).length===0)iss.push({s:'warning',c:'seo',m:'No Open Graph tags — social shares look broken',src:'Checked: <meta property="og:*"> tags in <head> · Open Graph Protocol (ogp.me)'});
+  if(Object.keys(seo.tw).length===0)iss.push({s:'info',c:'seo',m:'No Twitter Card tags',src:'Checked: <meta name="twitter:*"> tags in <head> · X/Twitter Card documentation'});
+  if(seo.wc<300)iss.push({s:'warning',c:'content',m:'Thin content ('+seo.wc+' words). Google prefers 300+.',src:'Source: Page body has '+seo.wc+' words — thin content ranks lower · Backlinko Content Study'});
+  if(seo.dl2>3)iss.push({s:'warning',c:'seo',m:seo.dl2+' empty/dead links',src:'Source: '+seo.dl2+' <a> tags with empty href, "#", or javascript: void · Ahrefs Broken Link Guide'});
+  if(!extra.isHttps)iss.push({s:'critical',c:'security',m:'Not using HTTPS',src:'Source: URL loaded over HTTP — Google uses HTTPS as ranking signal since 2014'});
+  if(!seo.hasRobots)iss.push({s:'warning',c:'seo',m:'No robots.txt found',src:'Checked: /robots.txt at site root — returned non-200 · Google robots.txt Specifications'});
+  if(!seo.hasSitemap)iss.push({s:'warning',c:'seo',m:'No sitemap.xml found',src:'Checked: /sitemap.xml at site root — not found · Google Sitemaps Guidelines'});
+
+  // Design
+  const des={};
+  const ctaKw=['sign up','get started','buy now','learn more','contact','book','schedule','subscribe','download','try free','start','join','register','order','shop','call now','free','demo','quote','consultation','enroll','apply','enquire','whatsapp','buy','purchase','get quote'];
+  des.ctas=[];
+  $('button,a.btn,a.button,[role="button"],input[type="submit"],a[class*="btn"],a[class*="button"],a[class*="cta"]').forEach(e=>{const t=e.textContent.trim().substring(0,70);if(t)des.ctas.push({t,tag:e.tagName})});
+  $('a').forEach(e=>{const t=e.textContent.trim().toLowerCase();if(ctaKw.some(k=>t.includes(k)))des.ctas.push({t:e.textContent.trim().substring(0,70),tag:'A'})});
+  des.ctas=[...new Map(des.ctas.map(c=>[c.t,c])).values()].slice(0,15);
+  const nav=$1('nav')||$1('[role="navigation"]')||$1('header');
+  des.nav=[];if(nav)nav.querySelectorAll('a').forEach(a=>{const t=a.textContent.trim();if(t&&t.length<40)des.nav.push(t)});
+  des.nav=[...new Set(des.nav)].slice(0,12);
+  des.vp=!!seo.viewport;
+  const ai=[];
+  if(!$1('a[href="#main"],a[href="#content"],.skip-nav,.skip-link'))ai.push('No skip navigation');
+  const lm=$('main,nav,header,footer,[role="main"],[role="navigation"],[role="banner"]').length;
+  if(lm<2)ai.push('Few ARIA landmarks');
+  let ul=0;$('input:not([type="hidden"]):not([type="submit"]):not([type="button"])').forEach(e=>{const id=e.id;const lb=id?$1('label[for="'+id+'"]'):null;if(!lb&&!e.getAttribute('aria-label')&&!e.closest('label'))ul++});
+  if(ul)ai.push(ul+' inputs without labels');
+  des.ai=ai;des.lm=lm;
+  if(des.ctas.length===0)iss.push({s:'critical',c:'design',m:'No CTAs — visitors don\'t know what action to take',src:'Checked: <button>, <a class="btn/cta">, <input type="submit">, and CTA keyword links · NNGroup CTA Study'});
+  if(des.nav.length===0)iss.push({s:'warning',c:'design',m:'No navigation detected',src:'Checked: <nav>, [role="navigation"], and <header> elements in page DOM'});
+  ai.forEach(i=>iss.push({s:'warning',c:'accessibility',m:i,src:'Checked: ARIA landmarks, skip-nav links, and form label associations · WCAG 2.1'}));
+
+  // ICP
+  const icp={};
+  const indM={'health & wellness':['health','wellness','fitness','nutrition','diet','workout','yoga','meditation','mental health','therapy','healing','doctor','medical','clinic','patient','treatment','ayurveda'],technology:['software','app','digital','tech','ai','machine learning','cloud','saas','platform','developer','api'],education:['learn','course','training','student','teach','education','academy','workshop','certification','coaching'],ecommerce:['shop','buy','cart','product','price','order','shipping','delivery','store','collection','sale'],finance:['invest','finance','money','bank','loan','credit','insurance','tax','wealth'],marketing:['marketing','branding','seo','campaign','strategy','growth','leads','conversion','funnel'],'real estate':['property','real estate','home','apartment','rent','mortgage'],'food & restaurant':['menu','restaurant','food','dining','chef','recipe','cuisine'],'beauty & lifestyle':['beauty','skincare','makeup','hair','salon','spa','fashion','luxury'],'professional services':['consulting','lawyer','legal','accounting','advisory','firm']};
+  icp.ind={};for(const[n,kw]of Object.entries(indM)){let s=0;kw.forEach(k=>{const m=bt.match(new RegExp('\\b'+k+'\\b','gi'));if(m)s+=m.length});if(s)icp.ind[n]=s}
+  const audM={B2B:['business','enterprise','company','organization','team','corporate','roi','scalable'],B2C:['you','your life','personal','family','individual','lifestyle'],Professionals:['professional','expert','specialist','career','executive','manager'],'Small Business':['small business','entrepreneur','startup','founder','freelance'],'Students/Learners':['student','beginner','learn','getting started','fundamentals'],'High-income':['premium','luxury','exclusive','vip','elite','bespoke'],'Budget-conscious':['affordable','free','cheap','save','budget','discount','value']};
+  icp.aud={};for(const[n,kw]of Object.entries(audM)){let s=0;kw.forEach(k=>{const m=bt.match(new RegExp('\\b'+k+'\\b','gi'));if(m)s+=m.length});if(s)icp.aud[n]=s}
+  const tonM={professional:['expertise','professional','solution','strategic','comprehensive','proven'],casual:['hey','awesome','cool','super','totally','vibe'],urgent:['now','today','limited','hurry','last chance','act now'],trustworthy:['guarantee','certified','trusted','secure','verified','testimonial'],emotional:['love','dream','passion','heart','believe','inspire','amazing']};
+  icp.ton={};for(const[n,kw]of Object.entries(tonM)){let s=0;kw.forEach(k=>{const m=bt.match(new RegExp('\\b'+k+'\\b','gi'));if(m)s+=m.length});if(s)icp.ton[n]=s}
+  const sI=Object.entries(icp.ind).sort((a,b)=>b[1]-a[1]),sA=Object.entries(icp.aud).sort((a,b)=>b[1]-a[1]),sT=Object.entries(icp.ton).sort((a,b)=>b[1]-a[1]);
+  icp.s={ind:sI[0]?.[0]||'Unknown',aud:sA[0]?.[0]||'General',aud2:sA[1]?.[0]||'',ton:sT[0]?.[0]||'neutral',ton2:sT[1]?.[0]||'',cta:des.ctas.length>0,test:/testimonial|review|rating|stars?\b/i.test(bt),price:/price|pricing|\$|₹|€|plan|package|tier/i.test(bt),form:seo.fm>0};
+
+  icp.pp=[];[/struggling with ([^.?!]{10,50})/gi,/tired of ([^.?!]{10,50})/gi,/(?:problem|challenge|issue)[s]?\s*(?:of|with|:)\s*([^.?!]{10,50})/gi].forEach(rx=>{let m;while((m=rx.exec(bt))!==null)icp.pp.push(m[1].trim())});
+  icp.pp=[...new Set(icp.pp)].slice(0,6);
+  icp.vp2=[];[/(?:we help|we offer|we provide|our)\s+([^.?!]{10,70})/gi,/(?:increase|improve|boost|grow|transform|achieve)\s+(?:your\s+)?([^.?!]{10,50})/gi].forEach(rx=>{let m;while((m=rx.exec(bt))!==null)icp.vp2.push(m[0].trim().substring(0,90))});
+  icp.vp2=[...new Set(icp.vp2)].slice(0,6);
+
+  // Scores
+  let ss2=100;
+  if(!seo.title)ss2-=15;else if(seo.tl<30||seo.tl>60)ss2-=5;
+  if(!seo.desc)ss2-=15;else if(seo.dl<120||seo.dl>160)ss2-=5;
+  if(seo.h.h1.length===0)ss2-=10;
+  if(seo.im>0)ss2-=Math.min(10,seo.im*2);
+  if(!seo.canonical)ss2-=5;if(!seo.viewport)ss2-=15;
+  if(seo.schema.length===0)ss2-=8;if(Object.keys(seo.og).length===0)ss2-=5;
+  if(!seo.lang)ss2-=3;if(seo.wc<300)ss2-=8;
+  if(!seo.hasRobots)ss2-=3;if(!seo.hasSitemap)ss2-=3;
+  ss2=Math.max(0,ss2);
+  let ds=100;if(des.ctas.length===0)ds-=25;if(des.nav.length===0)ds-=15;if(!des.vp)ds-=20;if(des.ai.length)ds-=des.ai.length*5;if(des.lm<3)ds-=10;ds=Math.max(0,ds);
+  let ts=100;if(!icp.s.test)ts-=20;if(!icp.s.form)ts-=15;if(seo.sl.length===0)ts-=10;if(!icp.s.cta)ts-=25;if(!extra.isHttps)ts-=15;ts=Math.max(0,ts);
+  const ov=Math.round(ss2*.4+ds*.3+ts*.3);
+
+  // Recs & weaknesses
+  const recs=[],wk=[];
+  if(ss2<70)wk.push({a:'SEO',s:'critical',d:'Multiple SEO issues — Google can\'t properly index this site',sc:ss2,src:'Composite score from meta tags, headings, structured data, and crawlability checks'});
+  else if(ss2<90)wk.push({a:'SEO',s:'warning',d:'Good foundation but missing some SEO signals',sc:ss2,src:'Based on meta tags, heading structure, schema markup, and Open Graph audit'});
+  if(ds<70)wk.push({a:'Design & UX',s:'critical',d:'Users can\'t navigate or take action easily',sc:ds,src:'Based on CTA detection, navigation structure, viewport meta, and ARIA landmarks'});
+  if(ts<70)wk.push({a:'Trust & Conversion',s:'critical',d:'Missing trust signals — visitors won\'t convert',sc:ts,src:'Based on testimonial keywords, form presence, social links, CTAs, and HTTPS check'});
+  if(!seo.title)recs.push({p:1,c:'SEO',a:'Add a compelling page title (50–60 chars) with your primary keyword',i:'high',src:'<title> tag missing · Google Search Central Title Guide'});
+  if(!seo.desc)recs.push({p:1,c:'SEO',a:'Write a meta description (150–160 chars) that sells the click',i:'high',src:'<meta name="description"> missing · Google Search Central'});
+  if(seo.h.h1.length===0)recs.push({p:1,c:'SEO',a:'Add one clear H1 heading with your main keyword',i:'high',src:'No <h1> found · Google SEO Starter Guide · W3C Heading Hierarchy'});
+  if(!seo.viewport)recs.push({p:1,c:'SEO',a:'Add viewport meta tag for mobile responsiveness',i:'critical',src:'<meta name="viewport"> missing · Google Mobile-First Indexing (required since 2019)'});
+  if(des.ctas.length===0)recs.push({p:1,c:'Conversion',a:'Add a prominent CTA above the fold: "Book a Call", "Get Started"',i:'critical',src:'No CTA elements detected · NNGroup CTA Best Practices'});
+  if(!icp.s.test)recs.push({p:2,c:'Trust',a:'Add testimonials, reviews, or case studies for social proof',i:'high',src:'No review/testimonial keywords in page text · BrightLocal Consumer Survey'});
+  if(seo.schema.length===0)recs.push({p:2,c:'SEO',a:'Add JSON-LD structured data (LocalBusiness, Organization)',i:'high',src:'No JSON-LD blocks found · Google Rich Results · schema.org'});
+  if(Object.keys(seo.og).length===0)recs.push({p:2,c:'SEO',a:'Add Open Graph tags for better social media sharing',i:'medium',src:'No og: meta tags found · Open Graph Protocol (ogp.me)'});
+  if(!seo.canonical)recs.push({p:2,c:'SEO',a:'Set a canonical URL to avoid duplicate content',i:'medium',src:'<link rel="canonical"> missing · Google Canonical URL Guidelines'});
+  if(seo.im>0)recs.push({p:2,c:'Accessibility',a:'Add alt text to '+seo.im+' images',i:'medium',src:seo.im+' <img> tags without alt · WCAG 2.1 §1.1.1 · Google Image SEO'});
+  if(!icp.s.form)recs.push({p:2,c:'Conversion',a:'Add a contact or lead capture form',i:'high',src:'No <form> elements on page · HubSpot Lead Capture Study'});
+  if(!seo.hasSitemap)recs.push({p:2,c:'SEO',a:'Create and submit a sitemap.xml',i:'medium',src:'/sitemap.xml not found · Google Search Console Sitemaps Guide'});
+  if(seo.wc<300)recs.push({p:3,c:'Content',a:'Add more content — explain services, share expertise, answer FAQs',i:'medium',src:'Only '+seo.wc+' words on page — thin content ranks lower · Backlinko Content Study'});
+  if(seo.sl.length===0)recs.push({p:3,c:'Visibility',a:'Link your social media profiles',i:'low',src:'No links to major social platforms found in page <a> tags'});
+  if(!icp.s.price&&icp.s.ind!=='Unknown')recs.push({p:3,c:'Conversion',a:'Show pricing or "starting from" to reduce friction',i:'low',src:'No pricing keywords (price, ₹, $, plan, package) found in page text'});
+  recs.sort((a,b)=>a.p-b.p);
+
+  return {url,seo,des,icp,iss,wk,recs,sc:{ov,seo:ss2,des:ds,tru:ts}}
+}
+
+// ─── UI Controller ───
+async function go(e) {
+  e.preventDefault();
+  const url = document.getElementById('urlin').value.trim();
+  if (!url) return;
+  show('loading');
+  const steps=['Fetching page...','Parsing HTML...','Auditing meta tags...','Analyzing links & images...','Profiling ideal customer...','Evaluating design patterns...','Checking accessibility...','Generating recommendations...'];
+  const pf=document.getElementById('pf'), ls=document.getElementById('lst');
+  let si=0;
+  const iv=setInterval(()=>{if(si<steps.length){ls.textContent=steps[si];pf.style.width=((si+1)/steps.length*100)+'%';si++}},400);
+
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    });
+    const data = await res.json();
+    clearInterval(iv);
+    if (!res.ok) throw new Error(data.error || 'Failed to fetch');
+    pf.style.width = '100%';
+    ls.textContent = 'Building report...';
+    await new Promise(r => setTimeout(r, 500));
+    const result = analyze(data.finalUrl || url, data.html, { isHttps: data.isHttps, robotsTxt: data.robotsTxt, sitemapFound: data.sitemapFound });
+    render(result);
+  } catch (err) {
+    clearInterval(iv);
+    document.getElementById('errmsg').textContent = err.message || 'Could not reach the website. Check the URL and try again.';
+    show('error');
+  }
+}
+
+function show(id) {
+  ['landing','loading','error','results'].forEach(x => document.getElementById(x).style.display = 'none');
+  const el = document.getElementById(id);
+  el.style.display = id === 'loading' ? 'flex' : id === 'error' ? 'flex' : id === 'results' ? 'block' : 'flex';
+}
+
+function reset() {
+  document.getElementById('rpanes').innerHTML = '';
+  document.getElementById('pf').style.width = '0';
+  show('landing');
+}
+
+function render(R) {
+  show('results');
+  document.getElementById('rurl').textContent = R.url;
+  document.getElementById('rts').textContent = 'Analyzed '+new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('mr').innerHTML = rng(R.sc.ov,120,'OVERALL');
+  document.getElementById('sr').innerHTML = rng(R.sc.seo,84,'SEO')+rng(R.sc.des,84,'Design')+rng(R.sc.tru,84,'Trust');
+  const s=R.seo,d=R.des,ic=R.icp;
+  document.getElementById('rstats').innerHTML =
+    '<div class="st"><div class="stv">'+s.wc+'</div><div class="stl">Words</div></div>'
+    +'<div class="st"><div class="stv">'+s.ti+'</div><div class="stl">Images</div></div>'
+    +'<div class="st"><div class="stv">'+s.tl2+'</div><div class="stl">Links</div></div>'
+    +'<div class="st"><div class="stv">'+d.ctas.length+'</div><div class="stl">CTAs</div></div>'
+    +'<div class="st"><div class="stv">'+s.schema.length+'</div><div class="stl">Schema</div></div>'
+    +'<div class="st"><div class="stv">'+R.iss.length+'</div><div class="stl">Issues</div></div>';
+
+  const tabs=[['wk','Weaknesses'],['ic','Ideal Customer'],['se','SEO'],['ux','Design'],['is','Issues ('+R.iss.length+')'],['fx','Fixes ('+R.recs.length+')']];
+  const tb=document.getElementById('rtabs');
+  tb.innerHTML=tabs.map(([id,l],i)=>'<button data-t="'+id+'"'+(i===0?' class="on"':'')+'>'+l+'</button>').join('');
+  tb.onclick=e=>{const b=e.target.closest('button');if(!b)return;tb.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('.pn').forEach(x=>x.classList.remove('on'));const p=document.getElementById('p-'+b.dataset.t);if(p)p.classList.add('on')};
+
+  const P=document.getElementById('rpanes');
+  const sm=ic.s,sInd=Object.entries(ic.ind).sort((a,b)=>b[1]-a[1]).slice(0,5),sAud=Object.entries(ic.aud).sort((a,b)=>b[1]-a[1]).slice(0,5),sTon=Object.entries(ic.ton).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  // Weaknesses
+  P.innerHTML='<div id="p-wk" class="pn on">'+(R.wk.length===0?'<div class="cd"><p style="color:var(--gn);font-weight:600">No major weaknesses. Solid!</p></div>':R.wk.map(w=>'<div class="wk '+(w.s==='warning'?'ww':'')+'"><div class="wka">'+esc(w.a)+(w.sc!=null?' — '+w.sc+'/100':'')+'</div><div class="wkd">'+esc(w.d)+'</div>'+(w.src?'<div class="src">'+esc(w.src)+'</div>':'')+'</div>').join(''))+'</div>';
+
+  // ICP
+  P.innerHTML+='<div id="p-ic" class="pn"><div class="icpb"><h3 style="color:var(--ac);margin:0 0 10px;font-size:14px;font-weight:700;text-transform:none;letter-spacing:0">Inferred Ideal Customer Profile</h3>'
+  +'<div class="dr"><span class="k">Industry</span><span class="v"><span class="tg">'+esc(sm.ind)+'</span></span></div>'
+  +'<div class="dr"><span class="k">Audience</span><span class="v"><span class="tg">'+esc(sm.aud)+'</span>'+(sm.aud2?'<span class="tg tgd">'+esc(sm.aud2)+'</span>':'')+'</span></div>'
+  +'<div class="dr"><span class="k">Tone</span><span class="v"><span class="tg">'+esc(sm.ton)+'</span>'+(sm.ton2?'<span class="tg tgd">'+esc(sm.ton2)+'</span>':'')+'</span></div>'
+  +'<div class="dr"><span class="k">Clear CTA</span><span class="v">'+ck(sm.cta)+'</span></div>'
+  +'<div class="dr"><span class="k">Social Proof</span><span class="v">'+ck(sm.test)+'</span></div>'
+  +'<div class="dr"><span class="k">Pricing</span><span class="v">'+ck(sm.price)+'</span></div>'
+  +'<div class="dr"><span class="k">Contact Form</span><span class="v">'+ck(sm.form)+'</span></div></div>'
+  +'<div class="g2"><div class="cd"><h3>Industry</h3>'+brs(sInd,'var(--ac)')+'<h3>Audience</h3>'+brs(sAud,'#a78bfa')+'</div>'
+  +'<div class="cd"><h3>Tone</h3>'+brs(sTon,'var(--gn)')
+  +(ic.pp.length?'<h3>Pain Points</h3><div>'+ic.pp.map(p=>'<span class="tg tgd">'+esc(p)+'</span>').join('')+'</div>':'')
+  +(ic.vp2.length?'<h3>Value Props</h3><ul style="padding-left:14px;font-size:11px;color:var(--mt)">'+ic.vp2.map(v=>'<li style="margin-bottom:2px">'+esc(v)+'</li>').join('')+'</ul>':'')
+  +'</div></div></div>';
+
+  // SEO
+  P.innerHTML+='<div id="p-se" class="pn"><div class="g2"><div class="cd"><h3>Meta Tags</h3>'
+  +'<div class="dr"><span class="k">Title</span><span class="v" style="max-width:60%">'+(s.title?esc(s.title):'<em style="color:var(--rd)">Missing</em>')+'</span></div>'
+  +'<div class="dr"><span class="k">Length</span><span class="v" style="color:'+(s.tl>=30&&s.tl<=60?'var(--gn)':'var(--yl)')+'">'+s.tl+'</span></div>'
+  +'<div class="dr"><span class="k">Description</span><span class="v" style="max-width:60%;font-size:10px">'+(s.desc?esc(s.desc.substring(0,80))+(s.desc.length>80?'...':''):'<em style="color:var(--rd)">Missing</em>')+'</span></div>'
+  +'<div class="dr"><span class="k">Desc Length</span><span class="v" style="color:'+(s.dl>=120&&s.dl<=160?'var(--gn)':'var(--yl)')+'">'+s.dl+'</span></div>'
+  +'<div class="dr"><span class="k">Canonical</span><span class="v">'+ck(!!s.canonical)+'</span></div>'
+  +'<div class="dr"><span class="k">Language</span><span class="v">'+(s.lang||'<span class="cx">Missing</span>')+'</span></div>'
+  +'<div class="dr"><span class="k">Viewport</span><span class="v">'+ck(!!s.viewport)+'</span></div>'
+  +'<div class="dr"><span class="k">Favicon</span><span class="v">'+ck(s.fav)+'</span></div>'
+  +'<div class="dr"><span class="k">robots.txt</span><span class="v">'+ck(s.hasRobots)+'</span></div>'
+  +'<div class="dr"><span class="k">sitemap.xml</span><span class="v">'+ck(s.hasSitemap)+'</span></div>'
+  +'<h3>Structured Data</h3>'+(s.schema.length?'<div>'+s.schema.map(t=>'<span class="tg">'+esc(t)+'</span>').join('')+'</div>':'<p style="font-size:11px;color:var(--rd)">None</p>')
+  +'<h3>Open Graph</h3>'+(Object.keys(s.og).length?Object.entries(s.og).map(([k,v])=>'<div class="dr"><span class="k">'+esc(k.replace('og:',''))+'</span><span class="v" style="font-size:10px;max-width:55%">'+esc(v.substring(0,55))+'</span></div>').join(''):'<p style="font-size:11px;color:var(--yl)">None</p>')
+  +'</div><div class="cd"><h3>Content</h3>'
+  +'<div class="dr"><span class="k">Words</span><span class="v">'+s.wc+'</span></div>'
+  +'<div class="dr"><span class="k">Paragraphs</span><span class="v">'+s.pp+'</span></div>'
+  +'<div class="dr"><span class="k">Images</span><span class="v">'+s.ti+' ('+s.ia+' with alt)</span></div>'
+  +'<div class="dr"><span class="k">Links</span><span class="v">'+s.tl2+' ('+s.il2+' int / '+s.el+' ext)</span></div>'
+  +'<div class="dr"><span class="k">Scripts</span><span class="v">'+s.sc+'</span></div>'
+  +'<div class="dr"><span class="k">Forms</span><span class="v">'+s.fm+'</span></div>'
+  +'<h3>Headings</h3>'+Object.entries(s.h).map(([t,tx])=>tx.length?'<div style="margin-bottom:5px"><strong style="color:var(--ac);font-size:10px">'+t.toUpperCase()+' ('+tx.length+')</strong>'+tx.slice(0,3).map(x=>'<div style="font-size:10px;color:var(--mt);padding-left:8px">'+esc(x.substring(0,55))+'</div>').join('')+'</div>':'').join('')
+  +(s.sl.length?'<h3>Social</h3><div>'+s.sl.map(x=>'<span class="tg tgd">'+esc(x.p)+'</span>').join('')+'</div>':'')
+  +'</div></div></div>';
+
+  // Design
+  P.innerHTML+='<div id="p-ux" class="pn"><div class="g2"><div class="cd">'
+  +'<h3>Responsive</h3><div class="dr"><span class="k">Viewport</span><span class="v">'+ck(d.vp)+'</span></div>'
+  +'<h3>Accessibility</h3><div class="dr"><span class="k">Landmarks</span><span class="v">'+d.lm+'</span></div>'
+  +d.ai.map(i=>'<div style="padding:2px 0;font-size:11px;color:var(--yl)">⚠ '+esc(i)+'</div>').join('')
+  +'</div><div class="cd">'
+  +'<h3>CTAs ('+d.ctas.length+')</h3>'+(d.ctas.slice(0,8).map(c=>'<div style="display:flex;align-items:center;gap:5px;padding:4px 0;font-size:11px"><span class="tg" style="font-size:8px;padding:1px 5px">'+c.tag+'</span>'+esc(c.t.substring(0,40))+'</div>').join('')||'<p style="font-size:11px;color:var(--rd)">None</p>')
+  +'<h3>Navigation ('+d.nav.length+')</h3>'+(d.nav.slice(0,8).map(n=>'<div style="padding:2px 0;font-size:11px;border-bottom:1px solid var(--bd)">'+esc(n)+'</div>').join('')||'<p style="font-size:11px;color:var(--yl)">None</p>')
+  +'</div></div></div>';
+
+  // Issues
+  const ci=R.iss.filter(i=>i.s==='critical'),wi=R.iss.filter(i=>i.s==='warning'),ii=R.iss.filter(i=>i.s==='info');
+  const isR=i=>'<div class="is">'+sv(i.s)+'<div style="min-width:0"><div>'+esc(i.m)+'</div>'+(i.src?'<div class="src">'+esc(i.src)+'</div>':'')+'</div></div>';
+  P.innerHTML+='<div id="p-is" class="pn"><div class="cd">'
+  +(ci.length?'<h3 style="color:var(--rd)">Critical ('+ci.length+')</h3>'+ci.map(isR).join(''):'')
+  +(wi.length?'<h3 style="color:var(--yl)">Warnings ('+wi.length+')</h3>'+wi.map(isR).join(''):'')
+  +(ii.length?'<h3 style="color:var(--mt)">Info ('+ii.length+')</h3>'+ii.map(isR).join(''):'')
+  +(R.iss.length===0?'<p style="color:var(--gn);font-weight:600">No issues!</p>':'')
+  +'</div></div>';
+
+  // Fixes
+  const ic2={critical:'var(--rd)',high:'var(--or)',medium:'var(--yl)',low:'var(--mt)'};
+  P.innerHTML+='<div id="p-fx" class="pn">'
+  +(R.recs.map((r,i)=>'<div class="rc"><span class="rn">'+(i+1)+'</span><div style="min-width:0"><div class="rcc">'+esc(r.c)+' <span style="color:'+(ic2[r.i]||'var(--mt)')+';font-size:8px;margin-left:2px">'+r.i+'</span></div><div class="rca">'+esc(r.a)+'</div>'+(r.src?'<div class="src">'+esc(r.src)+'</div>':'')+'</div></div>').join('')||'<div class="cd"><p style="color:var(--gn);font-weight:600">No fixes needed!</p></div>')
+  +'</div>';
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
